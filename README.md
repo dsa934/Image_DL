@@ -14,5 +14,5 @@ DL을 이용하여 Image를 다루는 여러 측면의 지식 습득 및 State-o
   * temp
 
 * Image Recognition
-  * temp
+  * ResNet
   
