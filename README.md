@@ -15,4 +15,5 @@ DL을 이용하여 Image를 다루는 여러 측면의 지식 습득 및 State-o
 
 * Image Recognition
   * ResNet
+  * Unet ( ISBI CHallenge : Segmentation of neuronal structures in EM stacks ) 
   
