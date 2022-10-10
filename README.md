@@ -10,8 +10,8 @@ DL을 이용하여 Image를 다루는 여러 측면의 지식 습득 및 State-o
 ## Contents
 
 * Image Generation
-  * GAN(Generative Adversarial Nets)
-  * temp
+  * GAN  (Generative Adversarial Nets)
+  * cGAN (Conditional Generative Adversarial Nets ) 
 
 * Image Recognition
   * ResNet
