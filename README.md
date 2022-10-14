@@ -3,8 +3,9 @@ Code interpretation and paper restoration for various Image - DL(Deep Learning) 
 
 ## Purpose
 
-Image-to-Image translation Task 및 Image를 다루는 DL Task에 대한 
-State-of-the-art Paper 복원을 통한 DL Task 이해를 위하여 제작하였습니다.
+Image-to-Image translation 분야의 State-of-the-art Paper 복원 및 Image Recognition 관련 Task를 직접 구현해 봄으로써
+
+Image Data를 다루는 DL에 대한 지식 습득을 목적으로 제작하였습니다.
 
 ## Contents
 
