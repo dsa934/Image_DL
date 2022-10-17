@@ -13,36 +13,47 @@
 
 < Condition Vector>
 
+ - Mnist data의 class (0~9)에 대한 one hot vector를 condition vector로 활용 
+
  - 기존의 GAN 과 구조는 모두 동일하지만 아래의 위치에 Condition Vector만 추가(Concatenation)
 
-    * Generator의 입력
+    * Generator의 입력 ( z, fake_label)
 
-    * Dircriminator의 입력 ( bath real_img and fake_img )
+    * Dircriminator의 입력 
 
-
- - MNIST data를 활용함으로  0 ~ 9 에 대한 one-hot vector를 condition vector로 활용 
- 
-   => 기존 GAN 모델에서는 데이터 로더로부터 파생되는 _img만 사용하였지만, cGAN의 경우 _label도 사용
-
-      _label = [128, 1] 이며, 0~ 9 값이 분포 
-
-      이들을 torch.nn.functional.one_hot(_label, num_classes = 10 ) 을 통해 각각 one hot vector 화 
-
-
-< Training >
-
-- 학습은 모든 label 값에 대하여 noise sample vector(z) +  condition vector ( one hot label vector) 의 구조로 학습
-
-  지금까지 z 에 label one_hot vector를 concatenation 하는 식으로 학습을 진행했으니
-
-  make_image() 에서는 원하는 condition vector를 직접 기입하여, condition vector에 관련된 이미지만 생성되는 것을 확인해보기 
+      E[ log(D(real_x)) ] : (_img, real_label) , gt_real
       
+      E[ log(1-D(G(z))) ] : ( generated_img, fake_label) ,gt_fake
+
+
+< 알아두기 >
+
+ - 최초 구현 시, one hot vector를 직접 변환하여, noise sample data 와 concatenation 
+
+   => one hot vector를 직접 변환 하였기 때문에 신경망에 의해 변환 과정이 학습 되지 않기 떄문에 실제 퍼포먼스가 낮게 나오는 문제점 발생
+
+   => 직접 변환이 아닌, embedding layer를 통해 label에 대한 embedding vector를 만들어서 사용하는 것으로 해결 (2022-10-15)
+
+
+ - noise sample data z에 대하여 real label concatenation 
+
+   => z 역시 랜덤하게 만들어지는 것이기 때문에, 굳이 real label을 concatenation 할 필요 없이 np.random.randint(0, 10, batch_size)를 통해 랜덤하게 형성 (2022-10-15)
+
+      label을 batch_size만큼 직접 구현하기 때문에 60000 % batch_size == 0 이 되도록 batch_size를 결정하는 것이 좋음
+
+
+ - 만약 원하는 이미지를 생성하고 싶다면 NN의 depth를 늘려야 하는 것으로 보임
+
+   특정 숫자를 입력받아 condition vector로 활용하면 이미지 생성이 잘 되지 않는 문제점 있었음 
+
+   원인을 찾는다면 추 후 업데이트 하기 
+   
+
 '''
 
 import torch
 import torch.nn as nn
 import torch.optim as optim
-torch.autograd.set_detect_anomaly(True)
 
 from torchvision.datasets import MNIST
 from torchvision.utils import save_image
@@ -50,133 +61,109 @@ import torchvision.transforms as trans
 
 from cGAN_model import Generator, Discriminator
 
+import argparse
+import numpy as np
 
-# train data format = [size, tensor, normal(mean, std)] 
-train_data_form = trans.Compose( [ trans.Resize(28), trans.ToTensor(), trans.Normalize([0.5], [0.5]) ] )
-
-# MNIST DATASET : 60,000 (train), 10,000(test)
-# train_data => 일종의 meta fild 형태로 저장
-train_data = MNIST( root = './data', train = True, download = True, transform = train_data_form )
-# len(data_loader) = 60,000 / 128 = 468.75 
-data_loader = torch.utils.data.DataLoader(train_data, batch_size = 128, shuffle = True )
-
-# set hyper params
+## set params
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-learing_rate = 0.0005
-batch_size = 128 
-n_epoch = 500
 
-# cGAN 을 위한 params
-num_class = 10 
- # 학습된 cGAN을 이용하여 target_batch 수 만큼 원하는 이미지를 그려볼것 
-target_batch = 10  
-target_num = None
+parser = argparse.ArgumentParser()
+parser.add_argument("--lr", type=float, default = 0.0002, help = "Adam : learning rate")
+parser.add_argument("--n_epochs", type = int, default = 40, help = "number of epoch of training")
+parser.add_argument("--batch_size", type = int, default = 32, help = "size of the batches")
+parser.add_argument("--num_class", type = int, default = 10, help = "number of MNIST dataset's class")
+parser.add_argument("--latent_dim", type = int, default = 100 , help = "latent vector z's dimension")
+parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first order momentum of gradient")
+parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
+parser.add_argument("--sample_interval", type = int, default = 2500 , help = "interval between image sampling")
+parser.add_argument("--img_size", type = int , default = 28, help = "size of MNIST image ")
+parser.add_argument("--target_batch", type = int, default = 10, help = "size of custom data's batch")
+opt = parser.parse_args()
 
-# 생성자에서 임의의 noise sample을 뽑을 떄 사용할 벡터의 크기 
-laten_input_dim = 100   
+## load data
+train_data = MNIST(
+    root = './data',
+    train = True,
+    download = True,
+    transform = trans.Compose( [trans.Resize(opt.img_size) , trans.ToTensor() , trans.Normalize([0.5], [0.5]) ] ),
+    )
+# 60,000 / 32 = 1875
+train_loader = torch.utils.data.DataLoader(train_data, batch_size = opt.batch_size, shuffle = True)
 
-# set NN instance
-generator = Generator(laten_input_dim + num_class ).to(device)
-discriminator = Discriminator().to(device)
+## set models
+discriminator = Discriminator(opt.img_size, opt.num_class).to(device)
+generator = Generator(opt.latent_dim, opt.num_class).to(device)
 
-# set loss
-criterion = nn.BCELoss().to(device)
+## set loss & optimizer
+criterion = nn.MSELoss()
+optimizer_g = optim.Adam(generator.parameters(), lr = opt.lr, betas=(opt.b1, opt.b2) )
+optimizer_d = optim.Adam(discriminator.parameters(), lr =opt.lr, betas=(opt.b1, opt.b2) )
 
-# set optim
-ge_optimizer = optim.Adam(generator.parameters(), lr = learing_rate)
-dis_optimizer = optim.Adam(discriminator.parameters(), lr = learing_rate) 
 
-# training
-for epoch in range(n_epoch):
+def chk_img(batch_done):
+    
+    n_row = 10 
 
-    for i , (_img, _label) in enumerate(data_loader):
+    z = torch.randn(n_row ** 2, opt.latent_dim).to(device)
 
-        # _img dim = [128,1,28,28]
-        _img, _label = _img.to(device), _label.to(device)
+    # [ 0, 0, 0,  ... 1,1,1, ... , 9, 9,9]
+    label = torch.LongTensor( [ num for num in range(n_row) for _ in range(n_row)  ] ).to(device)
 
-        # gt : ground_truth , dim = [128, 1]
-        gt_real = torch.cuda.FloatTensor(_img.shape[0],1).fill_(1.0)
-        gt_fake = torch.cuda.FloatTensor(_img.shape[0],1).fill_(0.0)
+    gen_imgs = generator( z, label)
 
-        
-        ## train - generator
-        ge_optimizer.zero_grad()
+    save_image(gen_imgs, f'./cGAN/train_output/{batch_done}.png', nrow = n_row, normalize = True )
 
-        # random noise sampling , z_dim = [128, 100]
-        z = torch.normal(mean=0, std=1, size = (_img.shape[0], laten_input_dim)).to(device)
-        
-        # conditional vector  c := conditional class , dim = [128, 10]
-        c = torch.nn.functional.one_hot(_label, num_classes = 10 ).to(device)
+## training
+for epoch in range(opt.n_epochs):
 
-        # conditional input = [128, 100+10]
-        conditional_z = torch.cat( (z,c), dim = 1 )
+    for batch_idx, (img, label) in enumerate(train_loader):
 
-        # _generated_img_dim = [128,1,28,28]
-        _generated_img = generator( conditional_z )
-        
-        # log(1-D(G(z))) 
-        g_loss = criterion(discriminator(_generated_img, c), gt_real)
+        # set img(real), noise_img(z) , label(real), fake_label       
+        img = torch.FloatTensor(img).to(device)
+        z = torch.randn(img.shape[0], opt.latent_dim).to(device)
 
-        # update
+        label = torch.LongTensor(label).to(device)
+        fake_label = torch.LongTensor(np.random.randint(0, opt.num_class, label.shape[0])).to(device)
+
+        # ground truth
+        gt_real = torch.cuda.FloatTensor(img.shape[0], 1).fill_(1.0)
+        gt_fake = torch.cuda.FloatTensor(img.shape[0], 1).fill_(0.0)
+
+        # =============
+        # Generator traning
+        # =============
+        optimizer_g.zero_grad()
+
+        gen_output = generator(z , fake_label )
+
+        g_loss = criterion( discriminator( gen_output, fake_label) , gt_real)
         g_loss.backward()
-        ge_optimizer.step()
+        optimizer_g.step()
 
 
-        ## train - discriminator
-        dis_optimizer.zero_grad()
+        # =============
+        # Discriminator traning
+        # =============
+        optimizer_d.zero_grad()
 
-        # E[ log(D(real_x)) ] + E[ log(1-D(G(z))) ]
-        real_loss = criterion(discriminator(_img, c), gt_real)
-        # _generated_img.detach() : gradient 전파 되지 않는 tensor 복제
-        fake_loss = criterion(discriminator(_generated_img.detach() , c ), gt_fake)
-        dis_loss = (real_loss + fake_loss) / 2
+        real_loss = criterion( discriminator(img, label) , gt_real)
+        fake_loss = criterion( discriminator(gen_output.detach(), fake_label), gt_fake)
 
-        # update
-        dis_loss.backward()
-        dis_optimizer.step()
+        d_loss = (real_loss + fake_loss) / 2
+        d_loss.backward()
+        optimizer_d.step()
 
 
-        # 매 50 epoch, 100 iterations 마다 GAN에 의해 생성되는 img 저장 
-        if epoch % 50 == 0 and i % 100 == 0  :
+        # len(train_loader) = 60,000 /32 = 1875 (iterations) , epcoh = 0 ~ 200
+        # 적당한 구강에서의 결과물 확인을 위한 interval 설정 
+        batch_done = epoch * len(train_loader) + batch_idx
 
-            # 매 50 epoch , 50 iterator 마다  생성된 이미지 25장을 5 x 5 격자 형태로 출력 
-            save_image(_generated_img[:25], f'./cGAN/train_output/{epoch}_{i}.png', nrow=5, normalize = True)
+        if batch_done % opt.sample_interval == 0 :
+            
+            chk_img(batch_done)
+            
+    print(f'Epoch : {epoch}/{opt.n_epochs}  |  G loss : {g_loss}  | D loss : {d_loss}')
 
-    print(f'Epoch : {epoch}/{n_epoch}  |  G loss : {g_loss}  | D loss : {dis_loss}')
-
-    if epoch == n_epoch -1 : 
+    if epoch == (opt.n_epochs)-1 : 
         torch.save(generator.state_dict(), "./cGAN/cGAN.pt")
 
-
-
-'''
- 학습된 cGAN 을 이용하여 원하는 target 에 대한 이미지 생성하기 
-
-'''
-def make_image():
-
-    # load model
-    generator.load_state_dict(torch.load("./cGAN/cGAN.pt"))
-
-    with torch.no_grad():
-
-        # random noise latent vector
-        z = torch.normal(mean=0, std=1, size = (target_batch, laten_input_dim)).to(device)
-        
-        print("MNIST dataset 중에서 만들고 싶은 숫자를 선택하세요 ( 0 ~ 9 ) : ")
-        target_num = int(input())
-
-        # condition vector
-        c = torch.tensor( [ target_num for _ in range(target_batch) ] )
-
-        c = torch.nn.functional.one_hot(c, num_classes = 10 ).to(device)
-
-        condition_input = torch.cat( (z,c) , dim = 1)
-
-        output = generator( condition_input )
-
-        save_image(output, f'./cGAN/custom_output/you_want_{target_num}_images.png', nrow = 5, normalize = True )
-
-        print("Close cGAN ")
-
-make_image()
