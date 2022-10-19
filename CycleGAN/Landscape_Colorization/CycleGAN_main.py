@@ -6,7 +6,7 @@
  Author / date : Jinwoo Lee / 2022-10-18
 
 
-< Cycle GAN º¹¿ø >
+< Cycle GAN ë³µì› >
 
  - Unpaired Image-to-Image Translation using Cycle-Consistent Adversarial Networks (ICCV 2017)
  
@@ -19,53 +19,53 @@
 
    => loss_bw2color = criterion_GAN( D_rgb( img_bw2rgb ) , gt_real ) 
 
-      ÀÔ·Â µ¥ÀÌÅÍ        : Èæ¹é ÀÌ¹ÌÁö
+      ì…ë ¥ ë°ì´í„°        : í‘ë°± ì´ë¯¸ì§€
 
-      »ç¿ë geneartor     : G_bw2color
+      ì‚¬ìš© geneartor     : G_bw2color
 
-      »ç¿ë discriminator : D_color
+      ì‚¬ìš© discriminator : D_color
 
-      ¡Å Èæ¹é ÀÌ¹ÌÁö¸¦ ÀÔ·ÂÀ¸·Î »ö»ó ÀÌ¹ÌÁö¸¦ ¸¸µç ÈÄ, »ö»ó discriminator¸¦ ¼Ó¿©¾ß ÇÑ´Ù ( ±×·²µíÇÑ »ö»ó ÀÌ¹ÌÁö »ı¼º, ÀÔ·Â µ¥ÀÌÅÍ¿Í µ¿ÀÏÇÏÁö ¾ÊÀ½ )
+      âˆ´ í‘ë°± ì´ë¯¸ì§€ë¥¼ ì…ë ¥ìœ¼ë¡œ ìƒ‰ìƒ ì´ë¯¸ì§€ë¥¼ ë§Œë“  í›„, ìƒ‰ìƒ discriminatorë¥¼ ì†ì—¬ì•¼ í•œë‹¤ ( ê·¸ëŸ´ë“¯í•œ ìƒ‰ìƒ ì´ë¯¸ì§€ ìƒì„±, ì…ë ¥ ë°ì´í„°ì™€ ë™ì¼í•˜ì§€ ì•ŠìŒ )
 
 
    => loss_color2bw = criterion_GAN( D_bw( img_rgb2bw ) , gt_real )
 
-      ÀÔ·Â µ¥ÀÌÅÍ        : »ö»ó ÀÌ¹ÌÁö
+      ì…ë ¥ ë°ì´í„°        : ìƒ‰ìƒ ì´ë¯¸ì§€
 
-      »ç¿ë geneartor     : G_color2bw
+      ì‚¬ìš© geneartor     : G_color2bw
 
-      »ç¿ë discriminator : D_bw
+      ì‚¬ìš© discriminator : D_bw
 
-      ¡Å »ö»ó ÀÌ¹ÌÁö¸¦ ÀÔ·ÂÀ¸·Î Èæ¹é ÀÌ¹ÌÁö¸¦ ¸¸µç ÈÄ, Èæ¹é discriminator¸¦ ¼Ó¿©¾ß ÇÑ´Ù ( ±×·²µíÇÑ Èæ¹é ÀÌ¹ÌÁö »ı¼º, ÀÔ·Â µ¥ÀÌÅÍ¿Í µ¿ÀÏÇÏÁö ¾ÊÀ½ )
+      âˆ´ ìƒ‰ìƒ ì´ë¯¸ì§€ë¥¼ ì…ë ¥ìœ¼ë¡œ í‘ë°± ì´ë¯¸ì§€ë¥¼ ë§Œë“  í›„, í‘ë°± discriminatorë¥¼ ì†ì—¬ì•¼ í•œë‹¤ ( ê·¸ëŸ´ë“¯í•œ í‘ë°± ì´ë¯¸ì§€ ìƒì„±, ì…ë ¥ ë°ì´í„°ì™€ ë™ì¼í•˜ì§€ ì•ŠìŒ )
 
 
  - Cycle Loss (L1 Loss)
  
    => c_loss_bw  = criterion_Cycle ( G_rgb2bw ( G_bw2rgb(img_gray)) , img_gray )
 
-      ÀÔ·Â µ¥ÀÌÅÍ    : Èæ¹é ÀÌ¹ÌÁö
+      ì…ë ¥ ë°ì´í„°    : í‘ë°± ì´ë¯¸ì§€
 
-      »ç¿ë generator :   G_bw2rgb -> G_rgb2bw
+      ì‚¬ìš© generator :   G_bw2rgb -> G_rgb2bw
 
-      Áï, Èæ¹é ÀÌ¹ÌÁö·Î »ö»ó ÀÌ¹ÌÁö¸¦ ¸¸µé°í, ¸¸µé¾îÁø »ö»ó ÀÌ¹ÌÁö·Î ´Ù½Ã Èæ¹é ÀÌ¹ÌÁö¸¦ ¸¸µé¾î¼­ , Èæ¹é ÀÌ¹ÌÁö¿Í ºñ±³ 
+      ì¦‰, í‘ë°± ì´ë¯¸ì§€ë¡œ ìƒ‰ìƒ ì´ë¯¸ì§€ë¥¼ ë§Œë“¤ê³ , ë§Œë“¤ì–´ì§„ ìƒ‰ìƒ ì´ë¯¸ì§€ë¡œ ë‹¤ì‹œ í‘ë°± ì´ë¯¸ì§€ë¥¼ ë§Œë“¤ì–´ì„œ , í‘ë°± ì´ë¯¸ì§€ì™€ ë¹„êµ 
  
    => c_loss_color = criterion_Cycle( G_bw2rgb ( img_rgb2bw ), img_color)
 
-      À§¿Í ¹İ´ë·Î 
+      ìœ„ì™€ ë°˜ëŒ€ë¡œ 
 
 
 
  - Identity Loss (L1 Loss)
 
-   => »ö»ó ±¸¼ºÀ» º¸Á¸ ÇØ¾ßÇÏ´Â °æ¿ì¿¡ »ç¿ë 
+   => ìƒ‰ìƒ êµ¬ì„±ì„ ë³´ì¡´ í•´ì•¼í•˜ëŠ” ê²½ìš°ì— ì‚¬ìš© 
 
       i_loss_bw = criterion_Identity( G_rgb2bw(img_gray), img_gray)
 
       i_loss_color = criterion_Identity( G_bw2rgb(img_color) , img_color)
 
-      Áï, Èæ¹é ÀÌ¹ÌÁö »ı¼º±â¿¡ Èæ¹é ÀÌ¹ÌÁö¸¦ ³Ö°í, Èæ¹é ÀÌ¹ÌÁö¿Í ºñ±³ ÇÏ¿© Â÷ÀÌ°¡ Àû¾îÁöµµ·Ï (ÀÚ±â ÀÚ½Å°ú ºñ±³ , identity loss)
+      ì¦‰, í‘ë°± ì´ë¯¸ì§€ ìƒì„±ê¸°ì— í‘ë°± ì´ë¯¸ì§€ë¥¼ ë„£ê³ , í‘ë°± ì´ë¯¸ì§€ì™€ ë¹„êµ í•˜ì—¬ ì°¨ì´ê°€ ì ì–´ì§€ë„ë¡ (ìê¸° ìì‹ ê³¼ ë¹„êµ , identity loss)
 
-          Ä®¶ó ÀÌ¹ÌÁö »ı¼º±â¿¡ Ä®¶ó ÀÌ¹ÌÁö¸¦ ³Ö°í, Ä®¶ó ÀÌ¹ÌÁö¿Í ºñ±³ ÇÏ¿© Â÷ÀÌ°¡ Àû¾îÁöµµ·Ï (ÀÚ±â ÀÚ½Å°ú ºñ±³ , identity loss)
+          ì¹¼ë¼ ì´ë¯¸ì§€ ìƒì„±ê¸°ì— ì¹¼ë¼ ì´ë¯¸ì§€ë¥¼ ë„£ê³ , ì¹¼ë¼ ì´ë¯¸ì§€ì™€ ë¹„êµ í•˜ì—¬ ì°¨ì´ê°€ ì ì–´ì§€ë„ë¡ (ìê¸° ìì‹ ê³¼ ë¹„êµ , identity loss)
 
 
 
@@ -75,15 +75,15 @@
 
    => Real loss :  d_bw_real_loss = criterion_GAN( D_bw(img_gray) , gt_real)       
 
-                   Èæ¹é ÀÌ¹ÌÁö·Î Èæ¹é ºĞ·ù±â¿¡ ³Ö¾úÀ»‹š °ªÀÌ 1ÀÌ µÇµµ·Ï
+                   í‘ë°± ì´ë¯¸ì§€ë¡œ í‘ë°± ë¶„ë¥˜ê¸°ì— ë„£ì—ˆì„Â‹Âš ê°’ì´ 1ì´ ë˜ë„ë¡
 
    => Fake loss :  d_bw_fake_loss = criterion_GAN( D_bw( buffer_out_img_rgb2bw ) , gt_fake ) 
 
-                   »ö»ó ÀÌ¹ÌÁö¸¦ rgb2bw¿¡ ³Ö¾î ¸¸µç gray image¸¦ buffer¿¡ ³Ö°í, 
+                   ìƒ‰ìƒ ì´ë¯¸ì§€ë¥¼ rgb2bwì— ë„£ì–´ ë§Œë“  gray imageë¥¼ bufferì— ë„£ê³ , 
 
-                   buffer¿¡¼­ Ãâ·ÂµÈ gray image¸¦ bw_discriminator¿¡ ³ÖÀº °á°ú °ª°ú 
+                   bufferì—ì„œ ì¶œë ¥ëœ gray imageë¥¼ bw_discriminatorì— ë„£ì€ ê²°ê³¼ ê°’ê³¼ 
                   
-                   gt_fake¿¡ ´ëÇÑ GAN loss °è»ê 
+                   gt_fakeì— ëŒ€í•œ GAN loss ê³„ì‚° 
 
 
 
@@ -93,26 +93,26 @@
 
    => Real loss :  d_rgb_real_loss = criterion_GAN( D_rgb(img_color) , gt_real)       
 
-                   »ö»ó ÀÌ¹ÌÁö·Î »ö»ó ºĞ·ù±â¿¡ ³Ö¾úÀ»‹š °ªÀÌ 1 ÀÌ µÇµµ·Ï
+                   ìƒ‰ìƒ ì´ë¯¸ì§€ë¡œ ìƒ‰ìƒ ë¶„ë¥˜ê¸°ì— ë„£ì—ˆì„Â‹Âš ê°’ì´ 1 ì´ ë˜ë„ë¡
 
    => Fake loss :  d_rgb_fake_loss = criterion_GAN( D_rgb( buffer_out_img_bw2rgb ) , gt_fake ) 
 
-                   Èæ¹é ÀÌ¹ÌÁö¸¦ bw2rgb¿¡ ³Ö¾î ¸¸µç color image¸¦ buffer¿¡ ³Ö°í, 
+                   í‘ë°± ì´ë¯¸ì§€ë¥¼ bw2rgbì— ë„£ì–´ ë§Œë“  color imageë¥¼ bufferì— ë„£ê³ , 
 
-                   buffer¿¡¼­ Ãâ·ÂµÈ colorimage¸¦ rgb_discriminator¿¡ ³ÖÀº °á°ú °ª°ú 
+                   bufferì—ì„œ ì¶œë ¥ëœ colorimageë¥¼ rgb_discriminatorì— ë„£ì€ ê²°ê³¼ ê°’ê³¼ 
                    
-                   gt_fake¿¡ ´ëÇÑ GAN loss °è»ê 
+                   gt_fakeì— ëŒ€í•œ GAN loss ê³„ì‚° 
 
 
 
 
-< ¾Ë¾ÆµÎ¸é À¯¿ëÇÑ method & info >
+< ì•Œì•„ë‘ë©´ ìœ ìš©í•œ method & info >
 
  1. optimizer = optim.Adam (  itertools.chain( model1.parameters() , model2.parameters() ) , lr = opt.lr , betas = (opt.b1 , opt.b2 ) ) 
  
-    => itertools.chain( contents ) : contents µéÀ» ÇÏ³ªÀÇ ÀÚ·áÇüÅÂ·Î ¹­´Â´Ù
+    => itertools.chain( contents ) : contents ë“¤ì„ í•˜ë‚˜ì˜ ìë£Œí˜•íƒœë¡œ ë¬¶ëŠ”ë‹¤
 
-       Áï, °¢ modelÀÇ ÆÄ¶ó¹ÌÅÍµéÀ» ÇÏ³ª·Î ¹­¾î¼­ optimizerÀÇ ¸Å°³º¯¼ö·Î »ç¿ë 
+       ì¦‰, ê° modelì˜ íŒŒë¼ë¯¸í„°ë“¤ì„ í•˜ë‚˜ë¡œ ë¬¶ì–´ì„œ optimizerì˜ ë§¤ê°œë³€ìˆ˜ë¡œ ì‚¬ìš© 
 
 
  2. next(iter(train_loader))
@@ -121,14 +121,14 @@
      
         x = iter(x)     current x.type = str_iterator 
 
-        iter : iterable(¹İº¹°¡´É) ÇÑ °´Ã¼¸¦ iter ÇÔ¼ö¸¦ ÅëÇØ iterator °´Ã¼·Î º¯È¯ 
+        iter : iterable(ë°˜ë³µê°€ëŠ¥) í•œ ê°ì²´ë¥¼ iter í•¨ìˆ˜ë¥¼ í†µí•´ iterator ê°ì²´ë¡œ ë³€í™˜ 
 
-        iterator °´Ã¼ : ÇÑ¹ø¿¡ ÇÏ³ª¾¿ ÇØ´ç °³Ã¼ÀÇ ¿ä¼Ò¸¦ ¼ø¼­´ë·Î access °¡´É ( for¹®µµ °¡´ÉÇÏÁö¸¸, ÀÌ´Â for¹®ÀÇ ¹üÀ§ ³»¿¡¼­¸¸ °¡´É -> ºÒÆí)
+        iterator ê°ì²´ : í•œë²ˆì— í•˜ë‚˜ì”© í•´ë‹¹ ê°œì²´ì˜ ìš”ì†Œë¥¼ ìˆœì„œëŒ€ë¡œ access ê°€ëŠ¥ ( forë¬¸ë„ ê°€ëŠ¥í•˜ì§€ë§Œ, ì´ëŠ” forë¬¸ì˜ ë²”ìœ„ ë‚´ì—ì„œë§Œ ê°€ëŠ¥ -> ë¶ˆí¸)
 
-                        ¼ø¼­´ë·Î µ¥ÀÌÅÍ¸¦ °¡Á®¿Â ÈÄ ÇØ´ç µ¥ÀÌÅÍ¸¦ Æó±âÇÏ±â ‹š¹®¿¡, ¸Ş¸ğ¸® Á¦¾àÀÌ µû¸£´Â ´ë±Ô¸ğ µ¥ÀÌÅÍ Ã³¸®¿¡¼­ À¯¿ë
+                        ìˆœì„œëŒ€ë¡œ ë°ì´í„°ë¥¼ ê°€ì ¸ì˜¨ í›„ í•´ë‹¹ ë°ì´í„°ë¥¼ íê¸°í•˜ê¸° Â‹Âšë¬¸ì—, ë©”ëª¨ë¦¬ ì œì•½ì´ ë”°ë¥´ëŠ” ëŒ€ê·œëª¨ ë°ì´í„° ì²˜ë¦¬ì—ì„œ ìœ ìš©
 
 
-        next()  : itertor °´Ã¼ÀÇ µ¥ÀÌÅÍ¸¦ ¼øÂ÷ÀûÀ¸·Î access 
+        next()  : itertor ê°ì²´ì˜ ë°ì´í„°ë¥¼ ìˆœì°¨ì ìœ¼ë¡œ access 
 
 
 
@@ -170,7 +170,7 @@ parser.add_argument('--lambda_cycle', type = int , default = 10 , help = "Cycle 
 parser.add_argument('--lambda_identity', type = int, default = 5, help = "Identity loss weight parameter")
 parser.add_argument("--sample_interval", type = int, default = 1500 , help = "interval between image sampling")
 parser.add_argument('--data_path', type = str, default ='./CycleGAN/dataset/landscape_dataset', help = " ")
-parser.add_argument('--model_save_path', type = str, default ='./CycleGAN/Landscape_Colorization', help = " best performance model save points")
+parser.add_argument('--model_save_path', type = str, default ='./CycleGAN/Landscape_Colorization/', help = " best performance model save points")
 parser.add_argument('--result_save_path', type = str, default ='./CycleGAN/Landscape_Colorization/result', help = " best performance model save points")
 opt = parser.parse_args()
 
@@ -306,7 +306,7 @@ for epoch in range(opt.n_epochs):
             val_bw2rgb = G_bw2rgb(val_gray)
             val_rgb2bw = G_rgb2bw(val_color)
 
-            # xÃàÀ» µû¶ó °¢°¢ÀÇ ±×¸®µğ ÀÌ¹ÌÁö »ı¼º 
+            # xì¶•ì„ ë”°ë¼ ê°ê°ì˜ ê·¸ë¦¬ë”” ì´ë¯¸ì§€ ìƒì„± 
             val_color = make_grid(val_color, nrow = 4, normalize = True)
             val_gray  = make_grid(val_gray, nrow = 4, normalize= True)
             val_bw2rgb  = make_grid(val_bw2rgb, nrow = 4, normalize= True)
