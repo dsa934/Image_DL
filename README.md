@@ -13,6 +13,7 @@ Image Data를 다루는 DL에 대한 지식 습득을 목적으로 제작하였�
   * GAN     (Generative Adversarial Nets)
   * cGAN    (Conditional Generative Adversarial Nets ) 
   * Pix2Pix (Image-to-Image Translation with Conditional Adversarial Networks , CVPR 2017) 
+  * CycleGAN (Unpaired Image-to-Image Translation using Cycle-Consistent Adversarial Networks)
   
 * Image Recognition
   * ResNet
