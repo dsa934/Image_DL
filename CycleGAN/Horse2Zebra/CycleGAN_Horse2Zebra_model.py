@@ -29,7 +29,7 @@ blocks for 256×256 and higher-resolution training images. Similar to Johnson et
 
       Formula :  ( output_size - 1 ) * stride + kernel_size 
 
-      Calculate RF  :  last feature map = 16 x 16 , 1개의 pixel 당 RF 계산 
+      Calculate RF  :  last feature map = 16 x 16 , 1개의 뉴런에 대한  RF 계산 
 
 
                        frist step  :  ( 1 - 1 ) * 1 + 4  = 4
