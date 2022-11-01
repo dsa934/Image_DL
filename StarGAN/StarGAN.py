@@ -12,9 +12,9 @@
 
  - 해당 논문은 datasets 으로 CelebA , RaFD 데이터셋을 활용 
 
-   * CelebA : 8개의 속성
+   * CelebA : 40개의 속성
 
-   * RaFD   : 5개의 속성 
+   * RaFD   : 8개의 속성 
 
    따라서, train, test part 구현은 하되, 성능 확인은 학습된 모델을 load 하여 사용 
 
@@ -77,8 +77,8 @@ parser.add_argument('--custom_img_path', type = str , default = './StarGAN/custo
 # model params
 parser.add_argument('--model_load_path', type = str, default ='./StarGAN/model_save', help = " load best performance modelpoints")
 parser.add_argument('--result_save_path', type = str, default ='./StarGAN/result', help = " save starGAN's result with Custom data")
-parser.add_argument('--c_dim', type = int, default = 5 , help = "condition vector dimension with RaFD dataset")
-parser.add_argument('--c2_dim', type = int, default = 8 , help = "condition vector dimension with RaFD CelebA")
+parser.add_argument('--c_dim', type = int, default = 5 , help = "condition vector dimension with CelebA dataset")
+parser.add_argument('--c2_dim', type = int, default = 8 , help = "condition vector dimension with RaFD datasets")
 parser.add_argument('--g_conv_dim', type = int, default = 64  , help = "# of Conv filter of generator")
 parser.add_argument('--d_conv_dim', type = int , default = 64 , help = "# of Conv filter of discriminator")
 parser.add_argument('--g_repeat_num', type = int , default = 6 , help = "# of residual block in generator")
