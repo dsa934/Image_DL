@@ -7,26 +7,26 @@
 
 < Collect Data >
 
- 1. ISBI CHallenge : Segmentation of neuronal structures in EM stacks  µ¥ÀÌÅÍ ´Ù¿î·Îµå
+ 1. ISBI CHallenge : Segmentation of neuronal structures in EM stacks  ë°ì´í„° ë‹¤ìš´ë¡œë“œ
 
-    => ÇØ´ç µ¥ÀÌÅÍ ¼ÂÀº membrane(¼¼Æ÷º®) ¿©ºÎ¸¦ ÆÇ´Ü ( 0 : ¼¼Æ÷º® x , 255 : ¼¼Æ÷º® o )
+    => í•´ë‹¹ ë°ì´í„° ì…‹ì€ membrane(ì„¸í¬ë²½) ì—¬ë¶€ë¥¼ íŒë‹¨ ( 0 : ì„¸í¬ë²½ x , 255 : ì„¸í¬ë²½ o )
  
- 2. train-labels.tif, train-volume.tif , ÆÄÀÏ·Î ºÎÅÍ   train : val : test = 24 : 3 : 3 ºñÀ² ¹èºĞ 
+ 2. train-labels.tif, train-volume.tif , íŒŒì¼ë¡œ ë¶€í„°   train : val : test = 24 : 3 : 3 ë¹„ìœ¨ ë°°ë¶„ 
 
- 3. train , val, test dir¿¡ µ¥ÀÌÅÍ ÀúÀå 
+ 3. train , val, test dirì— ë°ì´í„° ì €ì¥ 
    
 
- < function for collect data  >
+ < function for collected data  >
 
   - PIL's Image function 
 
     * seek 
 
-      => img.seek(idx = m) , m ¹ø¤Š  frame ÀÌ¹ÌÁö¸¦ ºÒ·¯¿À±â  
+      => img.seek(idx = m) , m ë²ˆÂŠ  frame ì´ë¯¸ì§€ë¥¼ ë¶ˆëŸ¬ì˜¤ê¸°  
 
-         ´Ü  np.asarray( img.seek(idx) ) ¿Í °°ÀÌ ¸Å°³º¯¼ö·Î »ç¿ëÇÒ °æ¿ì ,
+         ë‹¨  np.asarray( img.seek(idx) ) ì™€ ê°™ì´ ë§¤ê°œë³€ìˆ˜ë¡œ ì‚¬ìš©í•  ê²½ìš° ,
 
-         None °ªÀÌ Ãâ·Â µÇ±â ¶§¹®¿¡  seek¸¦ ¸Å°³º¯¼ö¿¡ ³Ö¾î¼­ »ç¿ëÇÏÁö ¸»°Í 
+         None ê°’ì´ ì¶œë ¥ ë˜ê¸° ë•Œë¬¸ì—  seekë¥¼ ë§¤ê°œë³€ìˆ˜ì— ë„£ì–´ì„œ ì‚¬ìš©í•˜ì§€ ë§ê²ƒ 
 
 
     * Image
@@ -37,19 +37,19 @@
 
     * .n_frames 
 
-      => Image·Î openÇÑ ÀÌ¹ÌÁö µ¥ÀÌÅÍÀÇ ÇÁ·¹ÀÓ Á¢±Ù 
+      => Imageë¡œ opení•œ ì´ë¯¸ì§€ ë°ì´í„°ì˜ í”„ë ˆì„ ì ‘ê·¼ 
 
 
     * .seek(idx) 
 
-      => idx¿¡(frame ±âÁØ) ÇØ´çÇÏ´Â image Ã£±â 
+      => idxì—(frame ê¸°ì¤€) í•´ë‹¹í•˜ëŠ” image ì°¾ê¸° 
 
 
   - Mmatplotlib.pyplot 
 
-    => ¶óÀÌºê·¯¸® Ãæµ¿ ¹®Á¦ ¹ß»ı : OMP: Error #15: Initializing libiomp5md.dll, but found libiomp5md.dll already initialized. 
+    => ë¼ì´ë¸ŒëŸ¬ë¦¬ ì¶©ë™ ë¬¸ì œ ë°œìƒ : OMP: Error #15: Initializing libiomp5md.dll, but found libiomp5md.dll already initialized. 
 
-       ÇØ°á : os.environ['KMP_DUPLICATE_LIB_OK']='True' 
+       í•´ê²° : os.environ['KMP_DUPLICATE_LIB_OK']='True' 
 
 '''
 
@@ -68,24 +68,24 @@ os.environ['KMP_DUPLICATE_LIB_OK']='True'
 def JW_Collect_Data():
 
     # Load Data
-    # os.path.join(directory, file_name) -> file name¿¡ Á÷Á¢ ÀÔ·Â½Ã \\ Áßº¹ ¹ß»ı 
+    # os.path.join(directory, file_name) -> file nameì— ì§ì ‘ ì…ë ¥ì‹œ \\ ì¤‘ë³µ ë°œìƒ 
     # data dimension = [ 512, 512, 30 ] 30 frame, gray-scale
     dir_, name_train, name_label  = './Unet' , 'train-volume.tif' , 'train-labels.tif'
     img_train = Image.open(os.path.join(dir_, name_train))
     img_label = Image.open(os.path.join(dir_, name_label))
 
     # Save Data
-    # train, val, test data ÀúÀåÇÒ °æ·Î ¼³Á¤ 
+    # train, val, test data ì €ì¥í•  ê²½ë¡œ ì„¤ì • 
     dir_train = os.path.join(dir_, 'train')
     dir_val   = os.path.join(dir_, 'val')
     dir_test  = os.path.join(dir_, 'test')
 
-    # dir »ı¼º
+    # dir ìƒì„±
     if not os.path.exists(dir_train) : os.makedirs(dir_train) 
     if not os.path.exists(dir_val) : os.makedirs(dir_val) 
     if not os.path.exists(dir_test) :os.makedirs(dir_test) 
 
-    # shuffle ±â´É ±¸Çö
+    # shuffle ê¸°ëŠ¥ êµ¬í˜„
     shuffle_idx = np.arange(img_train.n_frames)
     np.random.shuffle(shuffle_idx)
 
@@ -95,7 +95,7 @@ def JW_Collect_Data():
         # train 
         if idx < 24 : 
 
-            # seek¸¦ ¸Å°³º¯¼ö¿¡ ³Ö¾î¼­ »ç¿ëÇÏÁö ¸» °Í
+            # seekë¥¼ ë§¤ê°œë³€ìˆ˜ì— ë„£ì–´ì„œ ì‚¬ìš©í•˜ì§€ ë§ ê²ƒ
             img_train.seek(value)
             img_label.seek(value)
 
